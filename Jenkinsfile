@@ -5,7 +5,17 @@ pipeline {
             parallel {
               stage('Next App') {
                 when {
-                  changeset "packages/next-app/**"
+                  allOf {
+                    changeset "packages/next-app/**"
+
+                    expression {  // there are changes in some-directory/...
+                        sh(returnStatus: true, script: 'git diff  origin/master --name-only | grep --quiet "^packages/next-app/.*"') == 0
+                    }
+
+                    expression {   // ...and nowhere else.
+                        sh(returnStatus: true, script: 'git diff origin/master --name-only | grep --quiet --invert-match "^packages/next-app/.*"') == 1
+                    }
+                  }
                 }
 
                 steps {
