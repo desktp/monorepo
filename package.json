@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:next": "yarn workspace @monorepo/next-app dev",
-    "dev:remix": "yarn workspace @monorepo/remix-app dev"
+    "dev:next": "npm run dev --workspace=next-app",
+    "dev:remix": "npm run dev --workspace=remix-app"
   },
   "author": "",
   "license": "ISC",

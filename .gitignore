@@ -9,13 +9,15 @@
 /coverage
 
 # next.js
-/.next/
+packages/next-app/.next/
 /out/
 
 # remix
-/.cache
-/.mf
-/dist
+packages/remix-app/.cache
+packages/remix-app/.mf
+packages/remix-app/dist
+packages/remix-app/build
+packages/remix-app/public/build
 
 # production
 /build
