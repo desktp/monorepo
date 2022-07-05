@@ -5,7 +5,7 @@ pipeline {
             parallel {
               stage('Next App') {
                 when {
-                  changeset "./packages/next-app/**/*"
+                  changeset "./packages/next-app/**"
                 }
 
                 steps {
