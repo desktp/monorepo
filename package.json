@@ -1,0 +1,41 @@
+{
+  "name": "@monorepo/root",
+  "version": "1.0.0",
+  "description": "test multiple workspaces and pipeline",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:next": "yarn workspace @monorepo/next-app dev",
+    "dev:remix": "yarn workspace @monorepo/remix-app dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "packages/next-app",
+    "packages/remix-app"
+  ],
+  "dependencies": {
+    "@remix-run/cloudflare": "^1.6.3",
+    "@remix-run/cloudflare-workers": "^1.6.3",
+    "@remix-run/react": "^1.6.3",
+    "cross-env": "^7.0.3",
+    "next": "12.2.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.10.0",
+    "@remix-run/dev": "^1.6.3",
+    "@remix-run/eslint-config": "^1.6.3",
+    "@types/react": "^17.0.45",
+    "@types/react-dom": "^17.0.17",
+    "miniflare": "^2.4.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.6.4",
+    "eslint": "8.19.0",
+    "eslint-config-next": "12.2.0"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
