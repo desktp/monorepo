@@ -16,6 +16,8 @@ export default function Home() {
           Welcome to <a href="https://nextjs.org">Next.js!</a>, now powered by Jenkins
         </h1>
 
+        <h2>Adding a header</h2>
+
         <p className={styles.description}>
           Get started by editing{' '}
           <code className={styles.code}>pages/index.js</code>
