@@ -32,8 +32,10 @@ pipeline {
     agent { dockerfile true }
     stages {
         stage('Debug image') {
-          sh 'git -v'
-          sh 'wrangler -v'
+          steps {
+            sh 'git -v'
+            sh 'wrangler -v'
+          }
         }
 
         stage('Build apps') {
