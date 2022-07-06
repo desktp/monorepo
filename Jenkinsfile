@@ -35,7 +35,7 @@ pipeline {
           sh 'git -v'
           sh 'wrangler -v'
         }
-        
+
         stage('Build apps') {
             parallel {
               stage('Next App') {
@@ -55,8 +55,15 @@ pipeline {
                   changeset "packages/remix-app/**/*"
                 }
 
+                environment {
+                  CF_API_TOKEN = credentials('cf-apitoken')
+                  CF_ACCOUNT_ID = credentials('cf-accountid')
+                }
+
                 steps {
-                  sh 'echo "This is the remix app"'
+                  sh(script: 'echo "This is the remix app"', label: 'Confirm branch')
+
+                  sh(script: 'echo "loaded api key ${CF_ACCOUNT_ID"', label: 'Confirm API key')
                 }
               }
             }
