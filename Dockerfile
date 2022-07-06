@@ -1,3 +1,3 @@
-FROM node:16.13.1-alpine
+FROM node:16.13.1
 RUN apt-get -y update
-RUN apt-get -y install git wrangler
+RUN apt-get -y install wrangler
