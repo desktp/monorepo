@@ -29,8 +29,13 @@ def boolean hasChangesIn(String module) {
 }
 
 pipeline {
-    agent { docker { image 'node:16.13.1' } }
+    agent { dockerfile true }
     stages {
+        stage('Debug image') {
+          sh 'git -v'
+          sh 'wrangler -v'
+        }
+        
         stage('Build apps') {
             parallel {
               stage('Next App') {
