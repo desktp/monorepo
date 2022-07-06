@@ -1,47 +1,43 @@
+def boolean hasChangesIn(String module) {
+    if (env.CHANGE_TARGET == null) {
+       return true;
+    }
+
+    def MASTER = sh(
+        returnStdout: true,
+        script: "git rev-parse origin/${env.CHANGE_TARGET}"
+    ).trim()
+
+    // Gets commit hash of HEAD commit. Jenkins will try to merge master into
+    // HEAD before running checks. If this is a fast-forward merge, HEAD does
+    // not change. If it is not a fast-forward merge, a new commit becomes HEAD
+    // so we check for the non-master parent commit hash to get the original
+    // HEAD. Jenkins does not save this hash in an environment variable.
+    def HEAD = sh(
+        returnStdout: true,
+        script: "git show -s --no-abbrev-commit --pretty=format:%P%n%H%n HEAD | tr ' ' '\n' | grep -v ${MASTER} | head -n 1"
+    ).trim()
+
+    echo sh(
+        script: "git diff --name-only ${MASTER}...${HEAD} | grep ^${module}/"
+    )
+
+    return sh(
+        returnStatus: true,
+        script: "git diff --name-only ${MASTER}...${HEAD} | grep ^${module}/"
+    ) == 0
+}
+
 pipeline {
-    agent { docker { image 'node:16.13.1-alpine' } }
+    agent { docker { image 'node:16.13.1' } }
     stages {
-        stage('Debug') {
-          steps {
-            git branch: 'next-app-update', url: 'https://github.com/desktp/monorepo'
-          }
-        }
-
-        stage("Test changeset") {
-             when {
-                 changeset "**/Jenkinsfile"
-             }
-             steps {
-                 echo("changeset works")
-             }
-         }
-
-         stage("Display changeset?") {
-             steps {
-                 script {
-                     def changeLogSets = currentBuild.changeSets
-                     echo("changeSets=" + changeLogSets)
-                     for (int i = 0; i < changeLogSets.size(); i++) {
-                         def entries = changeLogSets[i].items
-                         for (int j = 0; j < entries.length; j++) {
-                             def entry = entries[j]
-                             echo "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}: ${entry.msg}"
-                             def files = new ArrayList(entry.affectedFiles)
-                             for (int k = 0; k < files.size(); k++) {
-                                 def file = files[k]
-                                 echo " ${file.editType.name} ${file.path}"
-                             }
-                         }
-                     }
-                 }
-             }
-         }
-
         stage('Build apps') {
             parallel {
               stage('Next App') {
                 when {
-                  changeset "packages/next-app/**"
+                  expression {
+                      return hasChangesIn("packages/next-app/**")
+                  }
                 }
 
                 steps {
