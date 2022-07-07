@@ -29,7 +29,7 @@ def boolean hasChangesIn(String module) {
 }
 
 pipeline {
-    agent { dockerfile true }
+    agent { docker { image 'node:16.13.1' } }
     stages {
         stage('Install dependenciies') {
           steps {
@@ -46,16 +46,24 @@ pipeline {
                   }
                 }
 
-                stage('Build static HTML') {
-                  steps {
-                    sh(script: 'npm run next:build', label: 'Build Next.JS')
-                    sh(script: 'npm run next:export', label: 'Export Next.JS static HTML')
+                stages {
+                  stage('Build static HTML') {
+                    steps {
+                      sh(script: 'npm run next:build', label: 'Build Next.JS')
+                      sh(script: 'npm run next:export', label: 'Export Next.JS static HTML')
+                    }
                   }
-                }
 
-                stage('Deploy to GitHub Pages') {
-                  withCredentials([gitUsernamePassword(credentialsId: 'github-desktp', gitToolName: 'Default')]) {
-                      // cat package.json | grep version | cut -d '"' -f 4
+                  stage('Deploy to GitHub Pages') {
+                    // when { branch: 'master' }
+                    steps {
+                      withCredentials([gitUsernamePassword(credentialsId: 'github-desktp', gitToolName: 'Default')]) {
+                        sh(script: "NEXT_APP_VERSION=`cat packages/next-app/package.json | grep version | cut -d '\"' -f 4`", label: "Parse Next App version")
+                        sh(script: 'mv packages/next-app/out/* .', label: 'Move static files to repository root')
+                        sh(script: 'git checkout gh-pages && git add . && git commit -m "Next App ${NEXT_APP_VERSION}"', label: 'Checkout to gh-pages branch and commit')
+                        sh(script: 'git push origin gh-pages', label: 'Push to origin')
+                      }
+                    }
                   }
                 }
               }
