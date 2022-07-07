@@ -44,3 +44,9 @@ yarn-error.log*
 
 # local plugins
 /.history
+
+# ignore all source on gh-pages branch
+package.json
+package-lock.json
+Jenkinsfile
+packages/*
