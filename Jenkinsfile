@@ -31,14 +31,13 @@ def boolean hasChangesIn(String module) {
 pipeline {
     agent { dockerfile true }
     stages {
-        stage('Debug image') {
+        stage('Install dependenciies') {
           steps {
-            sh 'git -v'
-            sh 'wrangler -v'
+            sh(script: 'npm install --no-package-lock')
           }
         }
 
-        stage('Build apps') {
+        stage('Build and deploy apps') {
             parallel {
               stage('Next App') {
                 when {
@@ -47,8 +46,17 @@ pipeline {
                   }
                 }
 
-                steps {
-                  sh 'echo "This is the next app"'
+                stage('Build static HTML') {
+                  steps {
+                    sh(script: 'npm run next:build', label: 'Build Next.JS')
+                    sh(script: 'npm run next:export', label: 'Export Next.JS static HTML')
+                  }
+                }
+
+                stage('Deploy to GitHub Pages') {
+                  withCredentials([gitUsernamePassword(credentialsId: 'github-desktp', gitToolName: 'Default')]) {
+                      // cat package.json | grep version | cut -d '"' -f 4
+                  }
                 }
               }
 
