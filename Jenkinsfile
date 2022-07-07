@@ -18,10 +18,6 @@ def boolean hasChangesIn(String module) {
         script: "git show -s --no-abbrev-commit --pretty=format:%P%n%H%n HEAD | tr ' ' '\n' | grep -v ${MASTER} | head -n 1"
     ).trim()
 
-    echo sh(
-        script: "git diff --name-only ${MASTER}...${HEAD} | grep ^${module}/"
-    )
-
     return sh(
         returnStatus: true,
         script: "git diff --name-only ${MASTER}...${HEAD} | grep ^${module}/"
@@ -31,9 +27,9 @@ def boolean hasChangesIn(String module) {
 pipeline {
     agent { docker { image 'node:16.13.1' } }
     stages {
-        stage('Install dependenciies') {
+        stage('Install dependencies') {
           steps {
-            sh(script: 'npm install --no-package-lock')
+            sh(script: 'npm install')
           }
         }
 
